@@ -220,7 +220,7 @@ class Auth_OpenID_Parse {
         }
     }
 
-    function match($regexp, $text, &$match)
+    function matches($regexp, $text, &$match)
     {
         if (preg_match($regexp, $text, $match)) {
            return true;
@@ -267,7 +267,7 @@ class Auth_OpenID_Parse {
         // Try to find the <HEAD> tag.
         $head_re = $this->headFind();
         $head_match = [];
-        if (!$this->match($head_re, $stripped, $head_match)) {
+        if (!$this->matches($head_re, $stripped, $head_match)) {
                      ini_set( 'pcre.backtrack_limit', $old_btlimit );
                      return [];
         }

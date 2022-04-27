@@ -14,6 +14,7 @@ require_once "Auth/OpenID/Extension.php";
 require_once "Auth/OpenID/Message.php";
 require_once "Auth/OpenID/TrustRoot.php";
 
+
 define('Auth_OpenID_AX_NS_URI',
        'http://openid.net/srv/ax/1.0');
 
@@ -424,7 +425,7 @@ class Auth_OpenID_AX_FetchRequest extends Auth_OpenID_AX_Message {
                 $obj = new Auth_OpenID_AX_Error(
                   sprintf("Cannot validate update_url %s " .
                           "against absent realm", $obj->update_url));
-            } else if (!Auth_OpenID_TrustRoot::match($realm,
+            } else if (!Auth_OpenID_TrustRoot::matches($realm,
                                                      $obj->update_url)) {
                 $obj = new Auth_OpenID_AX_Error(
                   sprintf("Update URL %s failed validation against realm %s",

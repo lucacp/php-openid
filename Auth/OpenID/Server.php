@@ -1041,7 +1041,7 @@ class Auth_OpenID_CheckIDRequest extends Auth_OpenID_Request {
         }
 
         if ($this->return_to !== null) {
-            return Auth_OpenID_TrustRoot::match($this->trust_root,
+            return Auth_OpenID_TrustRoot::matches($this->trust_root,
                                                 $this->return_to);
         } else {
             return true;

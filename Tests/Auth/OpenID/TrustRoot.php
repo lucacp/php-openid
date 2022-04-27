@@ -3,11 +3,14 @@
 /**
  * Tests for the TrustRoot module
  */
-
+require_once "vendor/autoload.php";
+use PHPUnit\Framework\TestCase;
 require_once "Auth/OpenID/TrustRoot.php";
 require_once "Tests/Auth/OpenID/TestUtil.php";
 
-class Tests_Auth_OpenID_TRParseCase extends PHPUnit_Framework_TestCase {
+
+
+class Tests_Auth_OpenID_TRParseCase extends TestCase {
     function __construct($desc, $case, $expected)
     {
         $this->setName($desc);
@@ -35,7 +38,7 @@ class Tests_Auth_OpenID_TRParseCase extends PHPUnit_Framework_TestCase {
     }
 }
 
-class Tests_Auth_OpenID_TRMatchCase extends PHPUnit_Framework_TestCase {
+class Tests_Auth_OpenID_TRMatchCase extends TestCase {
     function __construct($desc, $tr, $rt, $matches)
     {
         $this->setName($desc);
@@ -46,7 +49,7 @@ class Tests_Auth_OpenID_TRMatchCase extends PHPUnit_Framework_TestCase {
 
     function runTest()
     {
-        $matches = Auth_OpenID_TrustRoot::match($this->tr, $this->rt);
+        $matches = Auth_OpenID_TrustRoot::matches($this->tr, $this->rt);
         $this->assertEquals((bool)$this->matches, (bool)$matches);
     }
 }

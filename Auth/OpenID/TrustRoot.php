@@ -11,7 +11,6 @@
  * @copyright 2005-2008 Janrain, Inc.
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache
  */
-
 require_once 'Auth/OpenID/Discover.php';
 
 /**
@@ -269,7 +268,7 @@ class Auth_OpenID_TrustRoot {
      * @return bool $matches Whether the URL matches against the
      * trust root
      */
-    static function match($trust_root, $url)
+    static function matches($trust_root, $url)
     {
         $trust_root_parsed = Auth_OpenID_TrustRoot::_parse($trust_root);
         $url_parsed = Auth_OpenID_TrustRoot::_parse($url);
@@ -381,7 +380,7 @@ function Auth_OpenID_returnToMatches($allowed_return_to_urls, $return_to)
             // Does not have a wildcard
             (!$return_realm['wildcard']) &&
             // Matches the return_to that we passed in with it
-            (Auth_OpenID_TrustRoot::match($allowed_return_to, $return_to))) {
+            (Auth_OpenID_TrustRoot::matches($allowed_return_to, $return_to))) {
             return true;
         }
     }
