@@ -20,7 +20,12 @@ if (!defined('Auth_OpenID_RAND_SOURCE')) {
      * The filename for a source of random bytes. Define this yourself
      * if you have a different source of randomness.
      */
-    define('Auth_OpenID_RAND_SOURCE', '/dev/urandom');
+    if(stripos(PHP_OS, 'WIN')===0){
+        file_put_contents('.\\vendor\\rand-file.rand', openssl_random_pseudo_bytes(4096));
+        define('Auth_OpenID_RAND_SOURCE', './vendor/rand-file.rand');
+    }
+    else
+        define('Auth_OpenID_RAND_SOURCE', '/dev/urandom');
 }
 
 class Auth_OpenID_CryptUtil {

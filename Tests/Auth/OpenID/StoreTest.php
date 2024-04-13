@@ -21,6 +21,8 @@ require_once 'Auth/OpenID/CryptUtil.php';
 require_once 'Auth/OpenID/Nonce.php';
 require_once 'Auth/OpenID.php';
 
+use PHPUnit\Framework\TestCase;
+
 function _Auth_OpenID_mkdtemp()
 {
     if (function_exists('sys_get_temp_dir')) {
@@ -74,22 +76,22 @@ function _Auth_OpenID_getTmpDbName()
  *
  * @package OpenID
  */
-class Tests_Auth_OpenID_Store extends PHPUnit_Framework_TestCase {
 
-  function pass() {}
+class Tests_Auth_OpenID_Store extends TestCase {
 
     /**
-     * Prepares for the SQL store tests.
-     */
-    function setUp()
-    {
+    * Prepares for the SQL store tests.
+    */
+    function __construct(){
         $this->letters = Auth_OpenID_letters;
         $this->digits = Auth_OpenID_digits;
         $this->punct = Auth_OpenID_punct;
         $this->allowed_nonce = $this->letters . $this->digits;
         $this->allowed_handle = $this->letters . $this->digits . $this->punct;
     }
+  function pass() {}
 
+    
     /**
      * Generates an association with the specified parameters.
      */
@@ -130,7 +132,7 @@ class Tests_Auth_OpenID_Store extends PHPUnit_Framework_TestCase {
      *
      * OpenIDStore -> NoneType
      */
-    function _testStore($store)
+    function _testStore($store): void
     {
         // Association functions
         $now = time();
@@ -312,14 +314,14 @@ explicitly');
         $this->assertEquals(2, $cleaned);
     }
 
-    function _checkUseNonce($store, $nonce, $expected, $server_url, $msg=null)
+    function _checkUseNonce($store, $nonce, $expected, $server_url, $msg=null): void
     {
         list($stamp, $salt) = Auth_OpenID_splitNonce($nonce);
         $actual = $store->useNonce($server_url, $stamp, $salt);
         $this->assertEquals(intval($expected), intval($actual), "_checkUseNonce failed: $server_url, $msg");
     }
 
-    function _testNonce($store)
+    function _testNonce($store): void
     {
         // Nonce functions
 
@@ -347,7 +349,7 @@ explicitly');
         }
     }
 
-    function _testNonceCleanup($store) {
+    function _testNonceCleanup($store): void {
         if (!$store->supportsCleanup()) {
         	return;
         }
@@ -410,7 +412,7 @@ explicitly');
  * @package OpenID
  */
 class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
-    function test_memstore()
+    function test_memstore(): Bool
     {
         require_once 'Tests/Auth/OpenID/MemStore.php';
         $store = new Tests_Auth_OpenID_MemStore();
@@ -419,7 +421,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         $this->_testNonceCleanup($store);
     }
 
-    function test_filestore()
+    function test_filestore(): Bool
     {
         require_once 'Auth/OpenID/FileStore.php';
 
@@ -439,7 +441,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         $store->destroy();
     }
 
-    function test_postgresqlstore()
+    function test_postgresqlstore(): Bool
     {
         // If the postgres extension isn't loaded or loadable, succeed
         // because we can't run the test.
@@ -447,7 +449,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             !(@include_once 'DB.php')) {
             print "(not testing PostGreSQL store)";
             $this->pass();
-            return;
+            return null;
         }
 
         require_once 'Auth/OpenID/PostgreSQLStore.php';
@@ -501,7 +503,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         if ($failures == $allowed_failures) {
             $this->pass("Temporary database creation failed after $failures ".
                         " tries ('$temp_db_name'): " . $result->getMessage());
-            return;
+            return null;
         }
 
         // Disconnect from template1 and reconnect to the temporary
@@ -512,7 +514,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         if (PEAR::isError($db)) {
             $this->fail("Temporary database connection failed " .
                         " ('$temp_db_name'): " . $db->getMessage());
-            return;
+            return null;
         }
 
         $store = new Auth_OpenID_PostgreSQLStore($db);
@@ -541,7 +543,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             $this->fail("Template database connection (to drop " .
                         "temporary database) failed: " .
                         $template_db->getMessage());
-            return;
+            return null;
         }
 
         $result = $template_db->query(sprintf("DROP DATABASE %s",
@@ -550,14 +552,14 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         if (PEAR::isError($result)) {
             $this->fail("Dropping temporary database failed: " .
                         $result->getMessage());
-            return;
+            return null;
         }
 
         $template_db->disconnect();
         unset($template_db);
     }
 
-    function test_sqlitestore()
+    function test_sqlitestore(): Bool
     {
         // If the sqlite extension isn't loaded or loadable, succeed
         // because we can't run the test.
@@ -565,7 +567,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             !(@include_once 'DB.php')) {
             print "(not testing SQLite store)";
             $this->pass();
-            return;
+            return null;
         }
 
         require_once 'Auth/OpenID/SQLiteStore.php';
@@ -600,7 +602,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         rmdir($temp_dir);
     }
 
-    function test_mysqlstore()
+    function test_mysqlstore(): Bool
     {
         // If the mysql extension isn't loaded or loadable, succeed
         // because we can't run the test.
@@ -608,7 +610,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             !(@include_once 'DB.php')) {
             print "(not testing MySQL store)";
             $this->pass();
-            return;
+            return null;
         }
 
         require_once 'Auth/OpenID/MySQLStore.php';
@@ -628,7 +630,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             print "MySQL database connection failed: " .
                 $db->getMessage();
             $this->pass();
-            return;
+            return null;
         }
 
         $temp_db_name = _Auth_OpenID_getTmpDbName();
@@ -638,7 +640,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         if (PEAR::isError($result)) {
             $this->pass("Error creating MySQL temporary database: " .
                         $result->getMessage());
-            return;
+            return null;
         }
 
         $db->query("USE $temp_db_name");
@@ -652,7 +654,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         $db->query("DROP DATABASE $temp_db_name");
     }
 
-    function test_mdb2store()
+    function test_mdb2store(): Bool
     {
         // The MDB2 test can use any database engine. MySQL is chosen
         // arbitrarily.
@@ -661,7 +663,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             !(@include_once 'MDB2.php')) {
             print "(not testing MDB2 store)";
             $this->pass();
-            return;
+            return null;
         }
 
         require_once 'Auth/OpenID/MDB2Store.php';
@@ -681,7 +683,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
             print "MySQL database connection failed: " .
                 $db->getMessage();
             $this->pass();
-            return;
+            return null;
         }
 
         $temp_db_name = _Auth_OpenID_getTmpDbName();
@@ -691,7 +693,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         if (PEAR::isError($result)) {
             $this->pass("Error creating MySQL temporary database: " .
                         $result->getMessage());
-            return;
+            return null;
         }
 
         $db->query("USE $temp_db_name");
@@ -699,7 +701,7 @@ class Tests_Auth_OpenID_Included_StoreTest extends Tests_Auth_OpenID_Store {
         $store = new Auth_OpenID_MDB2Store($db);
         if (!$store->createTables()) {
             $this->fail("Failed to create tables");
-            return;
+            return null;
         }
         $this->_testStore($store);
         $this->_testNonce($store);
@@ -723,7 +725,7 @@ class Tests_Auth_OpenID_MemcachedStore_Test extends Tests_Auth_OpenID_Store {
         if (!extension_loaded('memcache')) {
             print "(skipping memcache store tests)";
             $this->pass();
-            return;
+            return null;
         }
         require_once 'Auth/OpenID/MemcachedStore.php';
 
@@ -745,8 +747,8 @@ class Tests_Auth_OpenID_MemcachedStore_Test extends Tests_Auth_OpenID_Store {
     }
 }
 
-class Tests_Auth_OpenID_StoreTest extends PHPUnit_Framework_TestSuite {
-    function getName()
+class Tests_Auth_OpenID_StoreTest extends TestCase {
+    public function getNameOfTest(): String
     {
         return "Tests_Auth_OpenID_StoreTest";
     }
